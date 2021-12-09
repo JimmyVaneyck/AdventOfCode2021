@@ -47,14 +47,15 @@ namespace AdventOfCode2021.Days.Day4
                 var currentMatrix = matrixes[i];
                 matrixOfWinner = GetEmptyMatrix();
                 int index = 0;
-                turnsTowin = 0;
 
                 while (index < bingoNumbers.Length)
                 {
                     var currentNumbers = bingoNumbers.ToList().GetRange(index, 5);
 
-                    currentNumbers.ForEach(number =>
+                    for (int j = 0; j < currentNumbers.Count; j++)
                     {
+                        var number = currentNumbers[j];
+
                         if (currentMatrix[0].Contains(number))
                         {
                             var indexOfNumber = currentMatrix[0].IndexOf(number);
@@ -95,16 +96,19 @@ namespace AdventOfCode2021.Days.Day4
 
                         if (foundWin)
                         {
-                            if (turnsTowin == -1 || turnsTowin < index)
+                            if (turnsTowin == -1 || (index + j) < turnsTowin)
                             {
                                 lastNumberWin = int.Parse(number);
-                                turnsTowin = index;
+                                turnsTowin = index + j;
                                 matrixWin = matrixOfWinner;
                                 matrixWinFull = currentMatrix;
-                                index = bingoNumbers.Length;
+                                  Console.WriteLine();
                             }
+
+                            index = bingoNumbers.Length;
+                            break;
                         }
-                    });
+                    }
 
                     index += 5;
                 }
@@ -115,15 +119,31 @@ namespace AdventOfCode2021.Days.Day4
             Console.WriteLine($"{matrixWin[2][0]} {matrixWin[2][1]} {matrixWin[2][2]} {matrixWin[2][3]} {matrixWin[2][4]}");
             Console.WriteLine($"{matrixWin[3][0]} {matrixWin[3][1]} {matrixWin[3][2]} {matrixWin[3][3]} {matrixWin[3][4]}");
             Console.WriteLine($"{matrixWin[4][0]} {matrixWin[4][1]} {matrixWin[4][2]} {matrixWin[4][3]} {matrixWin[4][4]}");
-            Console.WriteLine(lastNumberWin);
+            Console.WriteLine("------------------");
             Console.WriteLine($"{matrixWinFull[0][0]} {matrixWinFull[0][1]} {matrixWinFull[0][2]} {matrixWinFull[0][3]} {matrixWinFull[0][4]}");
             Console.WriteLine($"{matrixWinFull[1][0]} {matrixWinFull[1][1]} {matrixWinFull[1][2]} {matrixWinFull[1][3]} {matrixWinFull[1][4]}");
             Console.WriteLine($"{matrixWinFull[2][0]} {matrixWinFull[2][1]} {matrixWinFull[2][2]} {matrixWinFull[2][3]} {matrixWinFull[2][4]}");
             Console.WriteLine($"{matrixWinFull[3][0]} {matrixWinFull[3][1]} {matrixWinFull[3][2]} {matrixWinFull[3][3]} {matrixWinFull[3][4]}");
             Console.WriteLine($"{matrixWinFull[4][0]} {matrixWinFull[4][1]} {matrixWinFull[4][2]} {matrixWinFull[4][3]} {matrixWinFull[4][4]}");
+
+            int sum = 0;
+            for (int i = 0; i < matrixWinFull.Count; i++)
+            {
+                for (int j = 0; j < matrixWinFull[i].Count; j++)
+                {
+                    if (matrixWin[i][j].Contains("-1"))
+                    {
+                        sum += int.Parse(matrixWinFull[i][j]);
+                    }
+                }
+            }
+
+            Console.WriteLine(sum);
+            Console.WriteLine(lastNumberWin);
+            Console.WriteLine(sum * lastNumberWin);
         }
 
-        private static bool LookForRowOrColumn(List<List<string>> matrix)
+        private static bool LookForRowOrColumn(List<List<string>> emptyMatrix)
         {
             bool win = false;
             int colHitZero = 0;
@@ -132,10 +152,10 @@ namespace AdventOfCode2021.Days.Day4
             int colHitThree = 0;
             int colHitFour = 0;
 
-            for (int row = 0; row < matrix.Count; row++)
+            for (int row = 0; row < emptyMatrix.Count; row++)
             {
                 int hits = 0;
-                var rowMatrix = matrix[row];
+                var rowMatrix = emptyMatrix[row];
 
                 for (int col = 0; col < rowMatrix.Count; col++)
                 {
